@@ -1,0 +1,2 @@
+# dashboard
+simple cli dashboard
