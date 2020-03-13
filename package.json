@@ -1,0 +1,25 @@
+{
+  "name": "dashboard",
+  "version": "1.0.0",
+  "description": "a simple shell dash board",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 'no tests yet'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kwabounga/dashboard"
+  },
+  "keywords": [
+    "shell",
+    "dashboard"
+  ],
+  "author": "jean-yves chaillou @ kwa",
+  "license": "MIT",
+  "dependencies": {
+    "ansi-escapes": "^4.3.1",
+    "ansi-styles": "^4.2.1",
+    "cli-width": "^2.2.0",
+    "commander": "^4.1.1"
+  }
+}
