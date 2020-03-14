@@ -3,25 +3,15 @@
 const cliWidth = require('cli-width');
 const cliHeight = require('./exports/cli-height');
 const Dashboard = require('./exports/dashboard');
-const tty = require('tty');
+const w = cliWidth();
+const h = cliHeight();
+const cbs = require('./exports/cli_bootstrap').init(w, h);
 
+let dashboard = new Dashboard(w,h,true);
 
-// console.log(cliHeight())
-// console.log(cliWidth())
-// console.log(process.env)
-// console.log(process.stdout);
-
-
-let w = cliWidth();
-let h = cliHeight();
-let dashboard = new Dashboard(w,h);
 
 dashboard.setScreen()
-          .makeBloc('topleft',0,0,w/2,(h/2)-1)
-          .makeBloc('topright',w/2,0,w/2,(h/2)-1)
-          .makeBloc('bottomleft',0,h/2,w/2,(h/2)-1)
-          .makeBloc('bottomright',w/2,h/2,w/2,(h/2)-1)
-          .writeInBloc(0, 'hello\nbiloute\nc\'est la mer noire');
-
-// console.log('bloc', dashboard.getBloc(0))
-// console.log('bloc', dashboard.getBlocByName('bottomleft'))
+.makeBloc('title',0,0,cbs.bsbW(1),cbs.bsbH(6))
+.makeBloc('bloc1',0,cbs.bsbH(6)-1,cbs.bsbW(3),cbs.bsbH(3))
+.makeBloc('bloc2',cbs.bsbW(3),cbs.bsbH(6)-1,cbs.bsbW(3)*2,cbs.bsbH(3))
+.writeInBloc('title', 'DASHBOARD OF THE DEATH')
