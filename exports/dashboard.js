@@ -4,14 +4,20 @@ let liberateCursor = function(_scope){
   process.stdout.write(ansiEscapes.cursorTo(_scope.width,_scope.height) + ansiEscapes.eraseStartLine);
   process.stdout.write(ansiEscapes.cursorTo(0,_scope.height-2) + ansiEscapes.eraseEndLine);
 }
-function Dashboard(w, h, clear = false) {
+function Dashboard(w, h, _liberateScope) {
   // console.log(ansiEscapes)
   // return;
   this.width = w;
   this.height = h;
-  this.blocs = []
+  this.blocs = [];
+  this.lScope = (_liberateScope)?_liberateScope:this
 
   // process.stdout.write(ansiEscapes.cursorHide);
+
+  liberateCursor(this.lScope);
+}
+
+Dashboard.prototype.setScreen = function(clear = true) {
   if (clear) {
     process.stdout.write(ansiEscapes.cursorTo(0,0));
     for (var i = 0; i < this.height; i++) {
@@ -21,15 +27,8 @@ function Dashboard(w, h, clear = false) {
       process.stdout.write('\n')
     }
 
-    liberateCursor(this);
+    liberateCursor(this.lScope);
   }
-}
-
-Dashboard.prototype.setScreen = function() {
-  // process.stdout.write(ansiEscapes.cursorSavePosition);
-  // process.stdout.write(ansiEscapes.clearScreen + ansiEscapes.cursorUp());
-  // console.log('w:',w ,'h',h);
-  liberateCursor(this);
 
   return this;
 }
@@ -52,7 +51,7 @@ Dashboard.prototype.writeInBloc = function(_bloc, txt) {
     process.stdout.write(ansiEscapes.cursorTo(Math.floor(blocInfo.x + ((blocInfo.w - line.length) / 2)), (i - 1 + Math.floor(blocInfo.y + (blocInfo.h - lines.length) / 2))));
     process.stdout.write(line)
   }
-  liberateCursor(this);
+  liberateCursor(this.lScope);
   return this
 }
 Dashboard.prototype.getBloc = function(id) {
@@ -95,7 +94,7 @@ Dashboard.prototype.clearBloc = function(_bloc) {
     }
     process.stdout.write(ansiEscapes.cursorTo(x, i + y));
   }
-  liberateCursor(this);
+  liberateCursor(this.lScope);
   return this;
 }
 Dashboard.prototype.makeBloc = function(name, x, y, w, h) {
@@ -117,7 +116,7 @@ Dashboard.prototype.makeBloc = function(name, x, y, w, h) {
     process.stdout.write(ansiEscapes.cursorTo(x, i + y));
   }
 
-  liberateCursor(this);
+  liberateCursor(this.lScope);
   return this;
 }
 
