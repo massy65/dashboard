@@ -55,6 +55,9 @@ Dashboard.prototype.writeInBloc = function(_bloc, txt) {
   return this
 }
 Dashboard.prototype.writeInBlocLooper = function(_bloc, txt, db,nbloop = 10, interval = 250, persistent = true) {
+  if(Array.isArray(txt)){
+    console.log('IS ARRAY\nfuck')
+  }
   var resultTxt = txt;
   var counter = 0;
   var i = setInterval(function(){

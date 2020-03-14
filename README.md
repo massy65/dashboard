@@ -113,7 +113,7 @@ const cbs = require('./exports/cli_bootstrap').init(w, h);
 // now you can invoque cbs system
 
 // the method
-cbs.bsbW() // read "BootStrapSystem BootStrapBloc With"
+cbs.bsbW() // read "cli_bootstrap BootStrapBloc Width"
 // use the twelve base columns system like bootstrap
 // where 1 = size of bloc = cli width
 //       2 = size of bloc = cli width / 2
@@ -160,7 +160,7 @@ dashboard.makeBloc('bloc3', 0, 0, cbs.bsbW(2),3);
 ```
 
 ```js
-// you can write in each bloc with the name
+// you can write in each bloc by access with the name
 dashboard.writeInBloc('bloc1', '\nHello World');
 ```
 ```sh
