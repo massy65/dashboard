@@ -54,6 +54,23 @@ Dashboard.prototype.writeInBloc = function(_bloc, txt) {
   liberateCursor(this.lScope);
   return this
 }
+Dashboard.prototype.writeInBlocLooper = function(_bloc, txt, db,nbloop = 10, interval = 250, persistent = true) {
+  var resultTxt = txt;
+  var counter = 0;
+  var i = setInterval(function(){
+      db.writeInBloc(_bloc, resultTxt)
+      if(counter === nbloop*txt.length) {
+          clearInterval(i);
+          if(!persistent){
+            db.clearBloc(_bloc)
+          }
+      }
+      resultTxt = resultTxt.slice(1,resultTxt.length) + resultTxt.slice(0,1)
+      counter++;
+  }, interval);
+
+  return this
+}
 Dashboard.prototype.getBloc = function(id) {
   return this.blocs[id];
 }

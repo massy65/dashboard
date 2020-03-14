@@ -213,3 +213,9 @@ dashboard.setScreen()
 |                      ||                                              |      
 |──────────────────────||──────────────────────────────────────────────|
 ```
+
+```js
+// you can make basic text animation loop with writeInBlocLooper function
+// le text will be loop 3 times and update aniamtion each 100 MS , last param is for persistence
+dashboard.writeInBlocLooper('title', '      DASH BOARD OF THE DEATH    ',dashboard, 3,100,true)
+```
