@@ -266,3 +266,26 @@ you can mix all features to get the board  you want
 |                                                                      |      
 |──────────────────────────────────────────────────────────────────────|
 ```
+
+```js
+// in addition , dashboard give you a simple key board event system
+//  to interact with cli by pressing the keyboard
+// like this
+// dashboard.registrerEvent(keyName: string, callBack: fn(key))
+//
+// so the following instruction prepare the dashboard to get keypress t event:
+dashboard.registrerEvent('t', (key)=>{
+  dashboard.writeInBloc('title', 'YOU PRESS THE ' + key.name + ' KEY!')
+})
+// the register can be chained
+dashboard.registrerEvent('t', (key)=>{
+  dashboard.writeInBloc('title', 'YOU PRESS THE ' + key.name + ' KEY!')
+}).registrerEvent('b', (key)=>{
+  dashboard.writeInBloc('bloc1', 'YOU PRESS THE ' + key.name + ' KEY!')
+})
+// then let activate the keypress listener
+//
+dashboard.initKeyboardEvents();
+
+// the command ctrl + 'c' is registered to quit the app
+```

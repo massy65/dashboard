@@ -30,7 +30,7 @@ Dashboard.prototype.initKeyboardEvents = function() {
     } else {
       for (var i = 0; i < this.eventRegistered.length; i++) {
         if (this.eventRegistered[i][0] == key.name) {
-          this.eventRegistered[i][1]();
+          this.eventRegistered[i][1](key);
         }
       }
     }
