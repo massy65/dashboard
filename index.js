@@ -76,7 +76,13 @@ dashboard.writeInBloc('head', 'OVERVIEW INDOOR CULTURE')
           .writeInBloc('bloc2', blocTextCutter(someReportExample,dashboard.getBlocByName('bloc2').w))
           .statInBloc('bloc3', {title:'humi. /100',values:[40,55,20,60,30,0,10,0,10,20,30,40,50,60,70,90,80],maxValue:100})
           .statInBloc('bloc4', {title:'size / 150',values:[10,15,20,25,30,45,50,60,70,100,110,120,130,130,140,142,145],maxValue:150})
-
+          .registrerEvent('t', ()=>{
+            dashboard.writeInBlocLooper('foot', '   some action with t key     ', dashboard, 1, 300, false)
+          })
+          .registrerEvent('k', ()=>{
+            dashboard.writeInBlocLooper('foot', '   some action with k key     ', dashboard, 3, 100, false)
+          })
+          .initKeyboardEvents();
 
 // // for ReadMe
 // dashboard.setScreen()
@@ -102,22 +108,22 @@ dashboard.writeInBloc('head', 'OVERVIEW INDOOR CULTURE')
 //
 // dashboard.writeInBlocLooper('bouche', '      press any key to interact    ',dashboard, 3,100,true)
 
-const readline = require('readline');
-readline.emitKeypressEvents(process.stdin);
-process.stdin.setRawMode(true);
-process.stdin.on('keypress', (str, key) => {
-  if (key.ctrl && key.name === 'c') {
-    process.stdout.write(dashboard.ansie.clearScreen)
-    process.exit();
-  } else {
-    // var i = setInterval(function(){
-    //     counter++;
-    //     dashboard.writeInBloc('oeil1', eyesframes[counter%eyesframes.length])
-    //     dashboard.writeInBloc('oeil2', eyesframes[counter%eyesframes.length])
-    //     if(counter === nbframes) {
-    //         counter = 0;
-    //         clearInterval(i);
-    //     }
-    // }, 200);
-  }
-});
+// const readline = require('readline');
+// readline.emitKeypressEvents(process.stdin);
+// process.stdin.setRawMode(true);
+// process.stdin.on('keypress', (str, key) => {
+//   if (key.ctrl && key.name === 'c') {
+//     process.stdout.write(dashboard.ansie.clearScreen)
+//     process.exit();
+//   } else {
+//     // var i = setInterval(function(){
+//     //     counter++;
+//     //     dashboard.writeInBloc('oeil1', eyesframes[counter%eyesframes.length])
+//     //     dashboard.writeInBloc('oeil2', eyesframes[counter%eyesframes.length])
+//     //     if(counter === nbframes) {
+//     //         counter = 0;
+//     //         clearInterval(i);
+//     //     }
+//     // }, 200);
+//   }
+// });

@@ -2,9 +2,9 @@ const ansiStyle = require('ansi-styles');
 const ansiEscapes = require('ansi-escapes');
 
 // to replace the cursor before liberate cli without scrolling console
-let liberateCursor = function(_scope){
-  process.stdout.write(ansiEscapes.cursorTo(_scope.width,_scope.height) + ansiEscapes.eraseStartLine);
-  process.stdout.write(ansiEscapes.cursorTo(0,_scope.height-2) + ansiEscapes.eraseEndLine);
+let liberateCursor = function(_scope) {
+  process.stdout.write(ansiEscapes.cursorTo(_scope.width, _scope.height) + ansiEscapes.eraseStartLine);
+  process.stdout.write(ansiEscapes.cursorTo(0, _scope.height - 2) + ansiEscapes.eraseEndLine);
 }
 
 // object declaration
@@ -15,14 +15,33 @@ function Dashboard(w, h) {
   this.blocs = [];
   this.lScope = this;
   this.ansie = ansiEscapes;
-
+  this.eventRegistered = [];
   liberateCursor(this.lScope);
 }
 
+Dashboard.prototype.initKeyboardEvents = function() {
+  const readline = require('readline');
+  readline.emitKeypressEvents(process.stdin);
+  process.stdin.setRawMode(true);
+  process.stdin.on('keypress', (str, key) => {
+    if (key.ctrl && key.name === 'c') {
+      process.stdout.write(this.ansie.clearScreen)
+      process.exit();
+    } else {
+      for (var i = 0; i < this.eventRegistered.length; i++) {
+        if (this.eventRegistered[i][0] == key.name) {
+          this.eventRegistered[i][1]();
+        }
+      }
+    }
+
+
+  });
+}
 // screen initialisation
 Dashboard.prototype.setScreen = function(clear = true) {
   if (clear) {
-    process.stdout.write(ansiEscapes.cursorTo(0,0));
+    process.stdout.write(ansiEscapes.cursorTo(0, 0));
     for (var i = 0; i < this.height; i++) {
       for (var j = 0; j < this.width; j++) {
         process.stdout.write(' ')
@@ -60,7 +79,7 @@ Dashboard.prototype.writeInBloc = function(_bloc, txt) {
 
 // to display stats in a bloc
 Dashboard.prototype.statInBloc = function(_bloc, stats) {
-  if(!stats.title || !stats.maxValue || !stats.values) return;
+  if (!stats.title || !stats.maxValue || !stats.values) return;
 
   let blocInfo;
   if (typeof _bloc == 'string') {
@@ -69,8 +88,8 @@ Dashboard.prototype.statInBloc = function(_bloc, stats) {
   } else {
     blocInfo = this.getBloc(_bloc)
   }
-  let percentChara = function(_v){
-    if(_v == ' ' || _v == '')return 0;
+  let percentChara = function(_v) {
+    if (_v == ' ' || _v == '') return 0;
 
     let prctValue = _v * 100 / stats.maxValue;
     let nbRowChara = Math.round(prctValue * (blocInfo.h - 3) / 100);
@@ -78,18 +97,18 @@ Dashboard.prototype.statInBloc = function(_bloc, stats) {
   }
 
   process.stdout.write(ansiEscapes.cursorTo(blocInfo.x, blocInfo.y))
-  let valuesToDisplay = stats.values.slice(Math.max((stats.values.length)-(blocInfo.w -2),0), Math.max(stats.values.length,0));
+  let valuesToDisplay = stats.values.slice(Math.max((stats.values.length) - (blocInfo.w - 2), 0), Math.max(stats.values.length, 0));
 
-  for (var i = 0; i < (blocInfo.w -2); i++) {
-    if(i > valuesToDisplay.length){
+  for (var i = 0; i < (blocInfo.w - 2); i++) {
+    if (i > valuesToDisplay.length) {
       break;
     }
     process.stdout.write(ansiEscapes.cursorTo((blocInfo.x + i) + 1, (blocInfo.y) + 1))
 
     for (var j = 0; j < percentChara(valuesToDisplay[i]); j++) {
       let p = 0
-      for (var k = (blocInfo.h-3); k > 1; k--) {
-        if(percentChara(valuesToDisplay[i]) >= k){
+      for (var k = (blocInfo.h - 3); k > 1; k--) {
+        if (percentChara(valuesToDisplay[i]) >= k) {
           process.stdout.write('█')
         } else {
           process.stdout.write(' ')
@@ -99,7 +118,7 @@ Dashboard.prototype.statInBloc = function(_bloc, stats) {
       }
     }
   }
-  process.stdout.write(ansiEscapes.cursorTo((blocInfo.x) + 1, (blocInfo.y + (blocInfo.h -3))))
+  process.stdout.write(ansiEscapes.cursorTo((blocInfo.x) + 1, (blocInfo.y + (blocInfo.h - 3))))
   process.stdout.write(stats.title)
 
   liberateCursor(this.lScope);
@@ -107,22 +126,22 @@ Dashboard.prototype.statInBloc = function(_bloc, stats) {
 }
 
 // to display text with simple animation  loop in a bloc
-Dashboard.prototype.writeInBlocLooper = function(_bloc, txt, db,nbloop = 10, interval = 250, persistent = true) {
+Dashboard.prototype.writeInBlocLooper = function(_bloc, txt, db, nbloop = 10, interval = 250, persistent = true) {
   // if(Array.isArray(txt)){
   //   TODO array txt feature?
   // }
   var resultTxt = txt;
   var counter = 0;
-  var i = setInterval(function(){
-      db.writeInBloc(_bloc, resultTxt)
-      if(counter === nbloop*txt.length) {
-          clearInterval(i);
-          if(!persistent){
-            db.clearBloc(_bloc)
-          }
+  var i = setInterval(function() {
+    db.writeInBloc(_bloc, resultTxt)
+    if (counter === nbloop * txt.length) {
+      clearInterval(i);
+      if (!persistent) {
+        db.clearBloc(_bloc)
       }
-      resultTxt = resultTxt.slice(1,resultTxt.length) + resultTxt.slice(0,1)
-      counter++;
+    }
+    resultTxt = resultTxt.slice(1, resultTxt.length) + resultTxt.slice(0, 1)
+    counter++;
   }, interval);
 
   return this
@@ -161,9 +180,9 @@ Dashboard.prototype.clearBloc = function(_bloc) {
   let w = b.w;
   let h = b.h;
   process.stdout.write(ansiEscapes.cursorTo(x, y));
-  for (var i = 1; i < h-1; i++) {
-    for (var j = 1; j < w-1; j++) {
-      if (i == 1 | i == h-1 | j == 1 | j == w-1) {
+  for (var i = 1; i < h - 1; i++) {
+    for (var j = 1; j < w - 1; j++) {
+      if (i == 1 | i == h - 1 | j == 1 | j == w - 1) {
         process.stdout.write(ansiEscapes.cursorForward());
         // process.stdout.write(ansiEscapes.cursorForward());
       } else {
@@ -198,6 +217,10 @@ Dashboard.prototype.makeBloc = function(name, x, y, w, h) {
   }
 
   liberateCursor(this.lScope);
+  return this;
+}
+Dashboard.prototype.registrerEvent = function(keyName, callBack) {
+  this.eventRegistered.push([keyName, callBack])
   return this;
 }
 
