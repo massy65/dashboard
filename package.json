@@ -1,10 +1,10 @@
 {
-  "name": "dashboard",
+  "name": "cli_dashboard",
   "version": "1.0.0",
   "description": "a simple shell dash board",
   "main": "index.js",
   "scripts": {
-    "test": "echo 'no tests yet'"
+    "test": "node ./test.js"
   },
   "repository": {
     "type": "git",
@@ -12,10 +12,15 @@
   },
   "keywords": [
     "shell",
+    "cli",
     "dashboard"
   ],
   "author": "jean-yves chaillou @ kwa",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kwabounga/dashboard/issues"
+  },
+  "homepage": "https://github.com/kwabounga/dashboard#readme",
   "dependencies": {
     "ansi-escapes": "^4.3.1",
     "ansi-styles": "^4.2.1",

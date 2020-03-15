@@ -1,15 +1,42 @@
 
-
+const ansiStyle = require('ansi-styles');
+const ansiEscapes = require('ansi-escapes');
 const cliWidth = require('cli-width');
 const cliHeight = require('./exports/cli-height');
-const Dashboard = require('./exports/dashboard');
-const w = cliWidth();
-const h = cliHeight();
-const cbs = require('./exports/cli_bootstrap').init(w, h);
 
-let dashboard = new Dashboard(w,h);
+const cbs = require('./exports/cli_bootstrap');
+// to replace the cursor before liberate cli without scrolling console
+let liberateCursor = function(_scope) {
+  process.stdout.write(ansiEscapes.cursorTo(_scope.width, _scope.height) + ansiEscapes.eraseStartLine);
+  process.stdout.write(ansiEscapes.cursorTo(0, _scope.height - 2) + ansiEscapes.eraseEndLine);
+}
 
-var blocTextCutter = function (_text, w, h) {
+// object declaration
+function Dashboard() {
+
+  this.width = cliWidth();
+  this.height = cliHeight();
+
+  this.cbs = cbs.init(this.width, this.height);
+  this.blocs = [];
+  this.lScope = this;
+  this.ansie = ansiEscapes;
+  this.eventRegistered = [];
+
+  liberateCursor(this.lScope);
+}
+
+Dashboard.prototype.blocTextCutter = function (_bloc,_text) {
+  let blocInfo;
+  if (typeof _bloc == 'string') {
+    blocInfo = this.getBlocByName(_bloc)
+
+  } else {
+    blocInfo = this.getBloc(_bloc)
+
+  }
+  let w = blocInfo.w
+  let h = blocInfo.h
   let rW = w - 2;
   let count = Math.ceil(_text.length / rW)
   let cuttedText = ''
@@ -23,107 +50,220 @@ var blocTextCutter = function (_text, w, h) {
   }
   return cuttedText;
 }
-// // test 1
-// dashboard.setScreen()
-// .makeBloc('title',0,0,cbs.bsbW(1),cbs.bsbH(6))
-// .makeBloc('bloc1',0,cbs.bsbH(6)-1,cbs.bsbW(3),cbs.bsbH(3))
-// .makeBloc('bloc2',cbs.bsbW(3),cbs.bsbH(6)-1,cbs.bsbW(3)*2,cbs.bsbH(3))
-// .writeInBloc('title', 'DASHBOARD OF THE DEATH')
+
+Dashboard.prototype.initKeyboardEvents = function() {
+  const readline = require('readline');
+  readline.emitKeypressEvents(process.stdin);
+  process.stdin.setRawMode(true);
+  process.stdin.on('keypress', (str, key) => {
+    if (key.ctrl && key.name === 'c') {
+      process.stdout.write(this.ansie.clearScreen)
+      process.exit();
+    } else {
+      for (var i = 0; i < this.eventRegistered.length; i++) {
+        if (this.eventRegistered[i][0] == key.name) {
+          this.eventRegistered[i][1](key);
+        }
+      }
+    }
 
 
-// // test 2
-// dashboard.setScreen()
-//           .makeBloc('title',0,0,cbs.bsbW(1),cbs.bsbH(6))
-//           .makeBloc('bloc1',0,cbs.bsbH(6)-1,cbs.bsbW(3),cbs.bsbH(3))
-//           .makeBloc('bloc1_2',0,cbs.bsbH(3)+cbs.bsbH(6)-1,cbs.bsbW(3),cbs.bsbH(3))
-//           .makeBloc('bloc2',cbs.bsbW(3),cbs.bsbH(6)-1,cbs.bsbW(3)*2,cbs.bsbH(3)*2);
-//
-//
-// var someReportExample = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum fermentum dui eu justo rutrum, et maximus ex ornare. Ut hendrerit nisl nec posuere iaculis. Donec pulvinar, magna at auctor sagittis, neque ipsum rhoncus leo, eget varius justo nisl vel risus. Vivamus tempus neque quis luctus semper. Proin bibendum, elit eu ultrices accumsan, lacus purus vestibulum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum fermentum dui eu justo rutrum, et maximus ex ornare. Ut hendrerit nisl nec posuere iaculis. Donec pulvinar, magna at auctor sagittis, neque ipsum rhoncus leo, eget varius justo nisl vel risus. Vivamus tempus neque quis luctus semper. Proin bibendum, elit eu ultrices accumsan, lacus purus vestibulum.';
-//
-// dashboard.writeInBloc('title', 'DASHBOARD OF THE DEATH')
-//           .writeInBloc('bloc1', 'TEM.\n18°\n\nHUM.\n50%')
-//           .writeInBloc('bloc1_2', 'STATUS LIGHT\nON\n\nWATER LVL\n40%')
-//           .writeInBloc('bloc2', blocTextCutter(someReportExample,dashboard.getBlocByName('bloc2').w))
+  });
+}
+// screen initialisation
+Dashboard.prototype.setScreen = function(clear = true) {
+  if (clear) {
+    process.stdout.write(ansiEscapes.cursorTo(0, 0));
+    for (var i = 0; i < this.height; i++) {
+      for (var j = 0; j < this.width; j++) {
+        process.stdout.write(' ')
+      }
+      process.stdout.write('\n')
+    }
 
-// █ ▄ _ ... statistiques ?
-// test 3
-dashboard.setScreen()
-          .makeBloc('head',0,0,cbs.bsbW(1),cbs.bsbH(6))
-          .makeBloc('light',0,cbs.bsbH(6)-1,cbs.bsbW(6),cbs.bsbH(6))
-          .makeBloc('temp',cbs.bsbW(6),cbs.bsbH(6)-1,cbs.bsbW(6),cbs.bsbH(6))
-          .makeBloc('humi',0,(cbs.bsbH(6)*2)-1,cbs.bsbW(6),cbs.bsbH(6))
-          .makeBloc('acid',cbs.bsbW(6),(cbs.bsbH(6)*2)-1,cbs.bsbW(6),cbs.bsbH(6))
-          .makeBloc('nutr',0,(cbs.bsbH(6)*3)-1,cbs.bsbW(6),cbs.bsbH(6))
-          .makeBloc('wate',cbs.bsbW(6),(cbs.bsbH(6)*3)-1,cbs.bsbW(6),cbs.bsbH(6))
-          .makeBloc('vent',0,(cbs.bsbH(6)*4)-1,cbs.bsbW(3),cbs.bsbH(6))
-          .makeBloc('bloc2',cbs.bsbW(3),cbs.bsbH(6)-1,cbs.bsbW(2),cbs.bsbH(3)*2)
-          .makeBloc('bloc3',cbs.bsbW(3)+cbs.bsbW(2),cbs.bsbH(6)-1,cbs.bsbW(6),cbs.bsbH(3))
-          .makeBloc('bloc4',cbs.bsbW(3)+cbs.bsbW(2),cbs.bsbH(3)+cbs.bsbH(6)-1,cbs.bsbW(6),cbs.bsbH(3))
-          .makeBloc('foot',0,(cbs.bsbH(6)*5)-1,cbs.bsbW(1),cbs.bsbH(6))
+    liberateCursor(this.lScope);
+  }
 
+  return this;
+}
 
-var someReportExample = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum fermentum dui eu justo rutrum, et maximus ex ornare. Ut hendrerit nisl nec posuere iaculis. Donec pulvinar, magna at auctor sagittis, neque ipsum rhoncus leo, eget varius justo nisl vel risus. Vivamus tempus neque quis luctus semper. Proin bibendum, elit eu ultrices accumsan, lacus purus vestibulum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum fermentum dui eu justo rutrum, et maximus ex ornare. Ut hendrerit nisl nec posuere iaculis. Donec pulvinar, magna at auctor sagittis, neque ipsum rhoncus leo, eget varius justo nisl vel risus. Vivamus tempus neque quis luctus semper. Proin bibendum, elit eu ultrices accumsan, lacus purus vestibulum.';
+// to write in a bloc
+Dashboard.prototype.writeInBloc = function(_bloc, txt) {
+  let blocInfo;
+  if (typeof _bloc == 'string') {
+    blocInfo = this.getBlocByName(_bloc)
 
-dashboard.writeInBloc('head', 'OVERVIEW INDOOR CULTURE')
-          .writeInBloc('light', '\nLIGHT\nON')
-          .writeInBloc('temp', '\nTEMP.\n18°')
-          .writeInBloc('humi', '\nHUMI.\n55%')
-          .writeInBloc('acid', '\nPH\n7.5')
-          .writeInBloc('nutr', '\nLAST\n6h')
-          .writeInBloc('wate', '\nLEVEL\n50%')
-          .writeInBloc('vent', '\nVENT\nOFF')
-          .writeInBloc('bloc2', blocTextCutter(someReportExample,dashboard.getBlocByName('bloc2').w))
-          .statInBloc('bloc3', {title:'humi. /100',values:[40,55,20,60,30,0,10,0,10,20,30,40,50,60,70,90,80],maxValue:100})
-          .statInBloc('bloc4', {title:'size / 150',values:[10,15,20,25,30,45,50,60,70,100,110,120,130,130,140,142,145],maxValue:150})
-          .registrerEvent('t', ()=>{
-            dashboard.writeInBlocLooper('foot', '   some action with t key     ', dashboard, 1, 300, false)
-          })
-          .registrerEvent('k', ()=>{
-            dashboard.writeInBlocLooper('foot', '   some action with k key     ', dashboard, 3, 100, false)
-          })
-          .initKeyboardEvents();
+  } else {
+    blocInfo = this.getBloc(_bloc)
 
-// // for ReadMe
-// dashboard.setScreen()
-// dashboard.makeBloc('bloc1', 0, 0, cbs.bsbW(2),4);
-// dashboard.makeBloc('bloc2', cbs.bsbW(2), 0, cbs.bsbW(2),4);
-// dashboard.makeBloc('bloc3', 0, 3, cbs.bsbW(1),7);
-// dashboard.writeInBloc('bloc1', '\nHello World');
-//
+  }
+  process.stdout.write(ansiEscapes.cursorTo(blocInfo.x, blocInfo.y))
 
-// // animation
-// dashboard.setScreen()
-//           .makeBloc('oeil1',cbs.bsbW(6),cbs.bsbH(6), cbs.bsbW(6),cbs.bsbH(6))
-//           .makeBloc('oeil2',cbs.bsbW(6)*4,cbs.bsbH(6), cbs.bsbW(6),cbs.bsbH(6))
-//           .makeBloc('nez',cbs.bsbW(6)*2,(cbs.bsbH(6)*3)-2, cbs.bsbW(6)*2,cbs.bsbH(6))
-//           .makeBloc('bouche',cbs.bsbW(6),(cbs.bsbH(6)*5)-2, cbs.bsbW(6)*4,cbs.bsbH(6))
-//           .writeInBloc('oeil1', ' [] ')
-//           .writeInBloc('oeil2', ' [] ')
-//
-// let eyesframes = [' [] ', '[]  ', ' [] ', '  []']
-// var counter = 0;
-// var nbframes = 12;
-//
-//
-// dashboard.writeInBlocLooper('bouche', '      press any key to interact    ',dashboard, 3,100,true)
+  let lines = txt.split('\n');
+  for (var i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    process.stdout.write(ansiEscapes.cursorTo(Math.floor(blocInfo.x + ((blocInfo.w - line.length) / 2)), (i - 1 + Math.floor(blocInfo.y + (blocInfo.h - lines.length) / 2))));
+    process.stdout.write(line)
+  }
+  liberateCursor(this.lScope);
+  return this
+}
 
-// const readline = require('readline');
-// readline.emitKeypressEvents(process.stdin);
-// process.stdin.setRawMode(true);
-// process.stdin.on('keypress', (str, key) => {
-//   if (key.ctrl && key.name === 'c') {
-//     process.stdout.write(dashboard.ansie.clearScreen)
-//     process.exit();
-//   } else {
-//     // var i = setInterval(function(){
-//     //     counter++;
-//     //     dashboard.writeInBloc('oeil1', eyesframes[counter%eyesframes.length])
-//     //     dashboard.writeInBloc('oeil2', eyesframes[counter%eyesframes.length])
-//     //     if(counter === nbframes) {
-//     //         counter = 0;
-//     //         clearInterval(i);
-//     //     }
-//     // }, 200);
-//   }
-// });
+// to display stats in a bloc
+Dashboard.prototype.statInBloc = function(_bloc, stats) {
+  if (!stats.title || !stats.maxValue || !stats.values) return;
+
+  let blocInfo;
+  if (typeof _bloc == 'string') {
+    blocInfo = this.getBlocByName(_bloc)
+
+  } else {
+    blocInfo = this.getBloc(_bloc)
+  }
+  let percentChara = function(_v) {
+    if (_v == ' ' || _v == '') return 0;
+
+    let prctValue = _v * 100 / stats.maxValue;
+    let nbRowChara = Math.round(prctValue * (blocInfo.h - 3) / 100);
+    return nbRowChara
+  }
+
+  process.stdout.write(ansiEscapes.cursorTo(blocInfo.x, blocInfo.y))
+  let valuesToDisplay = stats.values.slice(Math.max((stats.values.length) - (blocInfo.w - 2), 0), Math.max(stats.values.length, 0));
+
+  for (var i = 0; i < (blocInfo.w - 2); i++) {
+    if (i > valuesToDisplay.length) {
+      break;
+    }
+    process.stdout.write(ansiEscapes.cursorTo((blocInfo.x + i) + 1, (blocInfo.y) + 1))
+
+    for (var j = 0; j < percentChara(valuesToDisplay[i]); j++) {
+      let p = 0
+      for (var k = (blocInfo.h - 3); k > 1; k--) {
+        if (percentChara(valuesToDisplay[i]) >= k) {
+          process.stdout.write('█')
+        } else {
+          process.stdout.write(' ')
+        }
+        p++
+        process.stdout.write(ansiEscapes.cursorTo((blocInfo.x + i) + 1, (blocInfo.y + p) + 1))
+      }
+    }
+  }
+  process.stdout.write(ansiEscapes.cursorTo((blocInfo.x) + 1, (blocInfo.y + (blocInfo.h - 3))))
+  process.stdout.write(stats.title)
+
+  liberateCursor(this.lScope);
+  return this
+}
+
+// to display text with simple animation  loop in a bloc
+Dashboard.prototype.writeInBlocLooper = function(_bloc, txt, db, nbloop = 10, interval = 250, persistent = true) {
+  // if(Array.isArray(txt)){
+  //   TODO array txt feature?
+  // }
+  var resultTxt = txt;
+  var counter = 0;
+  var i = setInterval(function() {
+    db.writeInBloc(_bloc, resultTxt)
+    if (counter === nbloop * txt.length) {
+      clearInterval(i);
+      if (!persistent) {
+        db.clearBloc(_bloc)
+      }
+    }
+    resultTxt = resultTxt.slice(1, resultTxt.length) + resultTxt.slice(0, 1)
+    counter++;
+  }, interval);
+
+  return this
+}
+
+// to get blocs informations by id
+Dashboard.prototype.getBloc = function(id) {
+  return this.blocs[id];
+}
+
+// to get blocs informations by name
+Dashboard.prototype.getBlocByName = function(name) {
+  for (var i = 0; i < this.blocs.length; i++) {
+    if (this.blocs[i].name == name) {
+
+      return this.blocs[i]
+    }
+  }
+  return null;
+}
+
+// to clear / clean a bloc
+Dashboard.prototype.clearBloc = function(_bloc) {
+  // process.stdout.write(ansiEscapes.scrollDown);
+  // ,x,y,w,h
+  let b;
+  if (typeof _bloc == 'string') {
+    b = this.getBlocByName(_bloc)
+
+  } else {
+    b = this.getBloc(_bloc)
+
+  }
+  let x = b.x;
+  let y = b.y;
+  let w = b.w;
+  let h = b.h;
+  process.stdout.write(ansiEscapes.cursorTo(x, y));
+  for (var i = 1; i < h - 1; i++) {
+    for (var j = 1; j < w - 1; j++) {
+      if (i == 1 | i == h - 1 | j == 1 | j == w - 1) {
+        process.stdout.write(ansiEscapes.cursorForward());
+        // process.stdout.write(ansiEscapes.cursorForward());
+      } else {
+        process.stdout.write(' ');
+
+      }
+    }
+    process.stdout.write(ansiEscapes.cursorTo(x, i + y));
+  }
+  liberateCursor(this.lScope);
+  return this;
+}
+
+// to create a bloc
+Dashboard.prototype.makeBloc = function(name, x, y, w, h) {
+  // process.stdout.write(ansiEscapes.cursorHide);
+  this.blocs.push(bloc(name, x, y, w, h));
+  process.stdout.write(ansiEscapes.cursorTo(x, y));
+  for (var i = 0; i < h; i++) {
+    for (var j = 0; j < w; j++) {
+      if (j == 0 || j == w - 1) {
+        process.stdout.write('|');
+      } else if (i == 0 || i == h - 1) {
+        process.stdout.write('─');
+
+      } else {
+        process.stdout.write(ansiEscapes.cursorForward());
+
+      }
+    }
+    process.stdout.write(ansiEscapes.cursorTo(x, i + y));
+  }
+
+  liberateCursor(this.lScope);
+  return this;
+}
+Dashboard.prototype.registrerEvent = function(keyName, callBack) {
+  this.eventRegistered.push([keyName, callBack])
+  return this;
+}
+
+// a bloc
+var bloc = function(name, x, y, w, h) {
+  return {
+    name: name,
+    x: x,
+    y: y,
+    w: w,
+    h: h,
+  }
+}
+module.exports = Dashboard;
