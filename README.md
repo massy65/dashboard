@@ -219,3 +219,50 @@ dashboard.setScreen()
 // le text will be loop 3 times and update aniamtion each 100 MS , last param is for persistence
 dashboard.writeInBlocLooper('title', '      DASH BOARD OF THE DEATH    ',dashboard, 3,100,true)
 ```
+```js
+// you can display simples statistics in a bloc
+// the method will display the most lasts informations as he can
+dashboard.statInBloc('bloc4', {title:'size',values:[2,4,6,7,8,9,14,15.5,16,17,16,15,16,17,18,19],maxValue:25})
+```
+
+you can mix all features to get the board  you want
+```sh
+
+
+|──────────────────────────────────────────────────────────────────────|      
+|                                                                      |      
+|                        DASHBOARD OF THE DEATH                        |      
+|                                                                      |      
+|──────────────────────────────────────────────────────────────────────|
+|──────────||──────────||──────────────────────────────────||──────────|      
+|          ||          ||Lorem ipsum dolor sit amet, consec||          |      
+|  LIGHT   ||  TEMP.   ||tetur adipiscing elit. Vestibulum ||        █ |      
+|    ON    ||   18°    ||fermentum dui eu justo rutrum, et ||        ██|      
+|          ||          ||maximus ex ornare. Ut hendrerit ni||       ███|      
+|──────────||──────────||sl nec posuere iaculis. Donec pulv||      ████|      
+                        |inar, magna at auctor sagittis, ne||     █████|      
+|──────────||──────────||que ipsum rhoncus leo, eget varius||     █████|      
+|          ||          ||justo nisl vel risus. Vivamus temp||    ██████|      
+|  HUMI.   ||    PH    ||us neque quis luctus semper. Proin||   ███████|      
+|   55%    ||   7.5    || bibendum, elit eu ultrices accums||  ████████|      
+|          ||          ||an, lacus purus vestibulum. Lorem ||statistics|      
+|──────────||──────────||psum dolor sit amet, consectetur a||──────────|      
+                        |ipiscing elit. Vestibulum fermentu|
+|──────────||──────────||m dui eu justo rutrum, et maximus ||──────────|      
+|          ||          ||ex ornare. Ut hendrerit nisl nec p||          |      
+|   LAST   ||  LEVEL   ||osuere iaculis. Donec pulvinar, ma||          |      
+|    6h    ||   50%    ||na at auctor sagittis, neque ipsum||          |      
+|          ||          || rhoncus leo, eget varius justo ni||        ██|      
+|──────────||──────────||sl vel risus. Vivamus tempus neque|| █████████|      
+                        | quis luctus semper. Proin bibendu||██████████|      
+|──────────────────────||m, elit eu ultrices accumsan, lacu||██████████|      
+|                      ||       s purus vestibulum.        ||██████████|      
+|         VENT         ||                                  ||██████████|      
+|         OFF          ||                                  ||██████████|      
+|                      ||                                  ||size      |      
+|──────────────────────||──────────────────────────────────||──────────|      
+|──────────────────────────────────────────────────────────────────────|      
+|                                                                      |      
+|                                                                      |      
+|──────────────────────────────────────────────────────────────────────|
+```

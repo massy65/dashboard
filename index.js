@@ -74,8 +74,8 @@ dashboard.writeInBloc('head', 'OVERVIEW INDOOR CULTURE')
           .writeInBloc('wate', '\nLEVEL\n50%')
           .writeInBloc('vent', '\nVENT\nOFF')
           .writeInBloc('bloc2', blocTextCutter(someReportExample,dashboard.getBlocByName('bloc2').w))
-          .statInBloc('bloc3', {title:'statistics',values:[4,5.5,2,6,3],maxValue:10})
-          .statInBloc('bloc4', {title:'size',values:[4,5.5,6,7,6,5,6,7,8,9],maxValue:10})
+          .statInBloc('bloc3', {title:'statistics',values:[4,5.5,2,6,3,0,1,0,1,2,3,4,5,6,7,9,8],maxValue:10})
+          .statInBloc('bloc4', {title:'size',values:[2,4,6,7,8,9,14,15.5,16,17,16,15,16,17,18,19],maxValue:25})
 
 
 // // for ReadMe
@@ -102,21 +102,22 @@ dashboard.writeInBloc('head', 'OVERVIEW INDOOR CULTURE')
 //
 // dashboard.writeInBlocLooper('bouche', '      press any key to interact    ',dashboard, 3,100,true)
 //
-// const readline = require('readline');
-// readline.emitKeypressEvents(process.stdin);
-// process.stdin.setRawMode(true);
-// process.stdin.on('keypress', (str, key) => {
-//   if (key.ctrl && key.name === 'c') {
-//     process.exit();
-//   } else {
-//     var i = setInterval(function(){
-//         counter++;
-//         dashboard.writeInBloc('oeil1', eyesframes[counter%eyesframes.length])
-//         dashboard.writeInBloc('oeil2', eyesframes[counter%eyesframes.length])
-//         if(counter === nbframes) {
-//             counter = 0;
-//             clearInterval(i);
-//         }
-//     }, 200);
-//   }
-// });
+const readline = require('readline');
+readline.emitKeypressEvents(process.stdin);
+process.stdin.setRawMode(true);
+process.stdin.on('keypress', (str, key) => {
+  if (key.ctrl && key.name === 'c') {
+    process.stdout.write(dashboard.ansie.clearScreen)
+    process.exit();
+  } else {
+    // var i = setInterval(function(){
+    //     counter++;
+    //     dashboard.writeInBloc('oeil1', eyesframes[counter%eyesframes.length])
+    //     dashboard.writeInBloc('oeil2', eyesframes[counter%eyesframes.length])
+    //     if(counter === nbframes) {
+    //         counter = 0;
+    //         clearInterval(i);
+    //     }
+    // }, 200);
+  }
+});
