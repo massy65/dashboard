@@ -54,6 +54,57 @@ Dashboard.prototype.writeInBloc = function(_bloc, txt) {
   liberateCursor(this.lScope);
   return this
 }
+Dashboard.prototype.statInBloc = function(_bloc, stats) {
+  if(!stats.title || !stats.maxValue || !stats.values) return;
+  let blocInfo;
+  if (typeof _bloc == 'string') {
+    blocInfo = this.getBlocByName(_bloc)
+
+  } else {
+    blocInfo = this.getBloc(_bloc)
+  }
+  let percentChara = function(_v){
+    // 100 / 100
+    // _v  /  stats.maxValue
+    let prctValue = _v * 100 / stats.maxValue
+    let nbRowChara = Math.round(prctValue * (blocInfo.h - 3) / 100)
+    return nbRowChara
+  }
+
+  process.stdout.write(ansiEscapes.cursorTo(blocInfo.x, blocInfo.y))
+  for (var i = 0; i < (blocInfo.w -2); i++) {
+    if(i >= stats.values.length)break;
+
+    process.stdout.write(ansiEscapes.cursorTo((blocInfo.x + i) + 1, (blocInfo.y) + 1))
+
+    for (var j = 0; j < percentChara(stats.values[i]); j++) {
+      let p = 0
+      for (var k = (blocInfo.h-3); k > 1; k--) {
+        if(percentChara(stats.values[i]) >= k){
+          process.stdout.write('█')
+        } else {
+          process.stdout.write(' ')
+        }
+        p++
+        process.stdout.write(ansiEscapes.cursorTo((blocInfo.x + i) + 1, (blocInfo.y + p) + 1))
+        // process.stdout.write(ansiEscapes.cursorTo(blocInfo.x + 1, ((blocInfo.y + i) + 1)+p))
+      }
+    }
+    stats.values[i]
+  }
+  process.stdout.write(ansiEscapes.cursorTo((blocInfo.x) + 1, (blocInfo.y + (blocInfo.h -2)) + 1))
+  process.stdout.write(stats.title)
+  //
+  //
+  // let lines = txt.split('\n');
+  // for (var i = 0; i < lines.length; i++) {
+  //   let line = lines[i];
+  //   process.stdout.write(ansiEscapes.cursorTo(Math.floor(blocInfo.x + ((blocInfo.w - line.length) / 2)), (i - 1 + Math.floor(blocInfo.y + (blocInfo.h - lines.length) / 2))));
+  //   process.stdout.write(line)
+  // }
+  liberateCursor(this.lScope);
+  return this
+}
 Dashboard.prototype.writeInBlocLooper = function(_bloc, txt, db,nbloop = 10, interval = 250, persistent = true) {
   if(Array.isArray(txt)){
     console.log('IS ARRAY\nfuck')
