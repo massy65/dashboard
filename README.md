@@ -9,10 +9,10 @@ and give us a bloc system for print in cli
 
 ```js
 // import dashboard module
-const Dashboard = require('./exports/dashboard');
+const Dashboard = require('@kwabounga/cli_dashboard');
 // create obj dashboard
-// you can create a dashboard giving this width and height
-let dashboard = new Dashboard(50,30)
+// you can create a dashboard
+let dashboard = new Dashboard()
 
 // clean the console
 dashboard.setScreen()
@@ -100,19 +100,11 @@ cli_bootstrap using cli-width and cli-height modules for working
 cli-height its a copy of his module and give you the height of cli
 
 ```js
-// activating cli_bootstrap system
-//
-// first get w and h cli by activating cliWidth and cliHeight
-const cliWidth = require('cli-width');
-const cliHeight = require('./exports/cli-height');
-const w = cliWidth();
-const h = cliHeight();
-// then initialize cbs system with it
-const cbs = require('./exports/cli_bootstrap').init(w, h);
+// you can access to cbs by invoking dashboard.cbs
+let cbs = dashboard.cbs
 
 // now you can invoque cbs system
-
-// the method
+// with the method
 cbs.bsbW() // read "cli_bootstrap BootStrapBloc Width"
 // use the twelve base columns system like bootstrap
 // where 1 = size of bloc = cli width
