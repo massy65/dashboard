@@ -52,12 +52,16 @@ function Dashboard() {
 Dashboard.prototype.setScreen = function(clear = true) {
   if (clear) {
     process.stdout.write(ansiEscapes.cursorTo(0, 0));
+    let out = ''
     for (var i = 0; i < this.height; i++) {
       for (var j = 0; j < this.width; j++) {
-        process.stdout.write(' ')
+        // process.stdout.write(' ')
+        out += ' '
       }
-      process.stdout.write('\n')
+      // process.stdout.write('\n')
+      out += '\n'
     }
+    process.stdout.write(out)
 
     liberateCursor(this.lScope);
   }
@@ -118,18 +122,22 @@ Dashboard.prototype.clearBloc = function(_bloc) {
   let w = b.w;
   let h = b.h;
   process.stdout.write(ansiEscapes.cursorTo(x, y));
+  let out = '';
   for (var i = 1; i < h - 1; i++) {
     for (var j = 1; j < w - 1; j++) {
       if (i == 1 | i == h - 1 | j == 1 | j == w - 1) {
-        process.stdout.write(ansiEscapes.cursorForward());
+        // process.stdout.write(ansiEscapes.cursorForward());
+        out += ansiEscapes.cursorForward()
         // process.stdout.write(ansiEscapes.cursorForward());
       } else {
-        process.stdout.write(' ');
-
+        // process.stdout.write(' ');
+        out += ' '
       }
     }
-    process.stdout.write(ansiEscapes.cursorTo(x, i + y));
+    // process.stdout.write(ansiEscapes.cursorTo(x, i + y));
+    out += ansiEscapes.cursorTo(x, i + y)
   }
+  process.stdout.write(out);
   liberateCursor(this.lScope);
   return this;
 }
@@ -148,21 +156,25 @@ Dashboard.prototype.makeBloc = function(name, x, y, w, h) {
   // process.stdout.write(ansiEscapes.cursorHide);
   this.blocs.push(bloc(name, x, y, w, h));
   process.stdout.write(ansiEscapes.cursorTo(x, y));
+  let out = '';
   for (var i = 0; i < h; i++) {
     for (var j = 0; j < w; j++) {
       if (j == 0 || j == w - 1) {
-        process.stdout.write('|');
+        // process.stdout.write('|');
+        out += '|';
       } else if (i == 0 || i == h - 1) {
-        process.stdout.write('─');
+        // process.stdout.write('─');
+        out += '─';
 
       } else {
-        process.stdout.write(ansiEscapes.cursorForward());
-
+        // process.stdout.write(ansiEscapes.cursorForward());
+        out += ansiEscapes.cursorForward()
       }
     }
-    process.stdout.write(ansiEscapes.cursorTo(x, i + y));
+    // process.stdout.write(ansiEscapes.cursorTo(x, i + y));
+    out += ansiEscapes.cursorTo(x, i + y)
   }
-
+  process.stdout.write(out)
   liberateCursor(this.lScope);
   return this;
 }
@@ -187,11 +199,15 @@ Dashboard.prototype.writeInBloc = function(_bloc, txt) {
   process.stdout.write(ansiEscapes.cursorTo(blocInfo.x, blocInfo.y))
 
   let lines = txt.split('\n');
+  let out = ''
   for (var i = 0; i < lines.length; i++) {
     let line = lines[i];
-    process.stdout.write(ansiEscapes.cursorTo(Math.floor(blocInfo.x + ((blocInfo.w - line.length) / 2)), (i - 1 + Math.floor(blocInfo.y + (blocInfo.h - lines.length) / 2))));
-    process.stdout.write(line)
+    out += ansiEscapes.cursorTo(Math.floor(blocInfo.x + ((blocInfo.w - line.length) / 2)), (i - 1 + Math.floor(blocInfo.y + (blocInfo.h - lines.length) / 2)));
+    // process.stdout.write(ansiEscapes.cursorTo(Math.floor(blocInfo.x + ((blocInfo.w - line.length) / 2)), (i - 1 + Math.floor(blocInfo.y + (blocInfo.h - lines.length) / 2))));
+    out += line
+    // process.stdout.write(line)
   }
+  process.stdout.write(out)
   liberateCursor(this.lScope);
   return this
 }
@@ -254,26 +270,31 @@ Dashboard.prototype.statInBloc = function(_bloc, stats) {
 
   process.stdout.write(ansiEscapes.cursorTo(blocInfo.x, blocInfo.y))
   let valuesToDisplay = stats.values.slice(Math.max((stats.values.length) - (blocInfo.w - 2), 0), Math.max(stats.values.length, 0));
-
+  let out = '';
   for (var i = 0; i < (blocInfo.w - 2); i++) {
     if (i > valuesToDisplay.length) {
       break;
     }
-    process.stdout.write(ansiEscapes.cursorTo((blocInfo.x + i) + 1, (blocInfo.y) + 1))
-
+    // process.stdout.write(ansiEscapes.cursorTo((blocInfo.x + i) + 1, (blocInfo.y) + 1))
+    out += ansiEscapes.cursorTo((blocInfo.x + i) + 1, (blocInfo.y) + 1)
     for (var j = 0; j < percentChara(valuesToDisplay[i]); j++) {
       let p = 0
       for (var k = (blocInfo.h - 3); k > 1; k--) {
         if (percentChara(valuesToDisplay[i]) >= k) {
-          process.stdout.write('█')
+          // process.stdout.write('█')
+          out += '█'
         } else {
-          process.stdout.write(' ')
+          // process.stdout.write(' ')
+          out += ' '
         }
         p++
-        process.stdout.write(ansiEscapes.cursorTo((blocInfo.x + i) + 1, (blocInfo.y + p) + 1))
+        // process.stdout.write(ansiEscapes.cursorTo((blocInfo.x + i) + 1, (blocInfo.y + p) + 1))
+        out += ansiEscapes.cursorTo((blocInfo.x + i) + 1, (blocInfo.y + p) + 1)
       }
     }
   }
+
+  process.stdout.write(out)
   process.stdout.write(ansiEscapes.cursorTo((blocInfo.x) + 1, (blocInfo.y + (blocInfo.h - 3))))
   process.stdout.write(stats.title)
 
