@@ -74,8 +74,8 @@ dashboard.writeInBloc('head', 'OVERVIEW INDOOR CULTURE')
           .writeInBloc('wate', '\nLEVEL\n50%')
           .writeInBloc('vent', '\nVENT\nOFF')
           .writeInBloc('bloc2', blocTextCutter(someReportExample,dashboard.getBlocByName('bloc2').w))
-          .statInBloc('bloc3', {title:'statistics',values:[4,5.5,2,6,3,0,1,0,1,2,3,4,5,6,7,9,8],maxValue:10})
-          .statInBloc('bloc4', {title:'size',values:[2,4,6,7,8,9,14,15.5,16,17,16,15,16,17,18,19],maxValue:25})
+          .statInBloc('bloc3', {title:'humi. /100',values:[40,55,20,60,30,0,10,0,10,20,30,40,50,60,70,90,80],maxValue:100})
+          .statInBloc('bloc4', {title:'size / 150',values:[10,15,20,25,30,45,50,60,70,100,110,120,130,130,140,142,145],maxValue:150})
 
 
 // // for ReadMe
@@ -101,7 +101,7 @@ dashboard.writeInBloc('head', 'OVERVIEW INDOOR CULTURE')
 //
 //
 // dashboard.writeInBlocLooper('bouche', '      press any key to interact    ',dashboard, 3,100,true)
-//
+
 const readline = require('readline');
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
