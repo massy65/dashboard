@@ -206,6 +206,7 @@ dashboard.setScreen()
 |──────────────────────||──────────────────────────────────────────────|
 ```
 
+### extras
 ```js
 // you can make basic text animation loop with writeInBlocLooper function
 // le text will be loop 3 times and update aniamtion each 100 MS , last param is for persistence
@@ -215,6 +216,19 @@ dashboard.writeInBlocLooper('title', '      DASH BOARD OF THE DEATH    ',dashboa
 // you can display simples statistics in a bloc
 // the method will display the most lasts informations as he can
 dashboard.statInBloc('bloc4', {title:'size',values:[2,4,6,7,8,9,14,15.5,16,17,16,15,16,17,18,19],maxValue:25})
+```
+### helpers
+```js
+// you can format text  in a bloc
+dashboard.blocTextCutter(_bloc: string, _text: String)
+// /!\ return the formated text not the Dashboard /!\
+```
+```js
+// you can get bloc informations
+dashboard.getBloc(id: string)
+dashboard.getBlocByName(name: string)
+// return a bloc(name: string, x: int, y: int, w: int, h: int)
+// /!\ return a bloc object not the Dashboard /!\
 ```
 
 you can mix all features to get the board  you want
@@ -259,6 +273,8 @@ you can mix all features to get the board  you want
 |──────────────────────────────────────────────────────────────────────|
 ```
 
+
+### keypress events
 ```js
 // in addition , dashboard give you a simple key board event system
 //  to interact with cli by pressing the keyboard
