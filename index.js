@@ -1,7 +1,7 @@
 /**
 * Dashboard
 * @author: Jean-Yves Chaillou
-* @version: 1.0.2
+* @version: 1.0.4
 * @since: 15.03.2020
 * @see: https://github.com/kwabounga/dashboard
 *
@@ -224,15 +224,19 @@ Dashboard.prototype.writeInBloc = function(_bloc, txt) {
 * @param {boolean} persistence [optional] if you don't want erase the text at the end
 * @return {Dashboard} - the dashboard object
 */
-Dashboard.prototype.writeInBlocLooper = function(_bloc, txt, db, nbloop = 10, interval = 250, persistent = true) {
+Dashboard.prototype.writeInBlocLooper = function(_bloc, txt, db, nbloop = 10, interval = 250, persistent = true, callBack = null) {
   var resultTxt = txt;
   var counter = 0;
+  db.clearBloc(_bloc)
   var i = setInterval(function() {
     db.writeInBloc(_bloc, resultTxt)
     if (counter === nbloop * txt.length) {
       clearInterval(i);
       if (!persistent) {
         db.clearBloc(_bloc)
+      }
+      if(callBack){
+        callBack()
       }
     }
     resultTxt = resultTxt.slice(1, resultTxt.length) + resultTxt.slice(0, 1)

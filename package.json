@@ -1,6 +1,6 @@
 {
   "name": "@kwabounga/cli_dashboard",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "a simple shell dash board",
   "main": "index.js",
   "scripts": {

@@ -60,14 +60,15 @@ dashboard.writeInBloc('head', 'OVERVIEW INDOOR CULTURE')
           .writeInBloc('nutr', '\nLAST\n6h')
           .writeInBloc('wate', '\nLEVEL\n50%')
           .writeInBloc('vent', '\nVENT\nOFF')
+          .writeInBloc('foot', 'press t , k or ctrl+c to quit')
           .writeInBloc('bloc2', dashboard.blocTextCutter('bloc2',someReportExample))
           .statInBloc('bloc3', {title:'humi. /100',values:[40,55,20,60,30,0,10,0,10,20,30,40,50,60,70,90,80],maxValue:100})
           .statInBloc('bloc4', {title:'size / 150',values:[10,15,20,25,30,45,50,60,70,100,110,120,130,130,140,142,145],maxValue:150})
           .registrerEvent('t', ()=>{
-            dashboard.writeInBlocLooper('foot', '   some action with t key     ', dashboard, 1, 300, false)
+            dashboard.writeInBlocLooper('foot', '   some action with t key     ', dashboard, 1, 300, false,()=>{dashboard.writeInBloc('foot', 'press t , k or ctrl+c to quit')})
           })
           .registrerEvent('k', ()=>{
-            dashboard.writeInBlocLooper('foot', '   some action with k key     ', dashboard, 3, 100, false)
+            dashboard.writeInBlocLooper('foot', '   press t , k or ctrl+c to quit     ', dashboard, 3, 100, true)
           })
           .initKeyboardEvents();
 
