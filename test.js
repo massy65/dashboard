@@ -70,6 +70,7 @@ dashboard.writeInBloc('head', 'OVERVIEW INDOOR CULTURE')
           .registrerEvent('k', ()=>{
             dashboard.writeInBlocLooper('foot', '   press t , k or ctrl+c to quit     ', dashboard, 3, 100, true)
           })
+          .unRegistrerEvent('t')
           .initKeyboardEvents();
 
 

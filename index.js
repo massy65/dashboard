@@ -40,6 +40,7 @@ function Dashboard() {
   this.lScope = this;
   this.ansie = ansiEscapes;
   this.eventRegistered = [];
+  this.currentLoopAnimation = [];
 
   liberateCursor(this.lScope);
 }
@@ -228,7 +229,12 @@ Dashboard.prototype.writeInBlocLooper = function(_bloc, txt, db, nbloop = 10, in
   var resultTxt = txt;
   var counter = 0;
   db.clearBloc(_bloc)
-  var i = setInterval(function() {
+  if(db.currentLoopAnimation.length>0){
+    clearInterval(db.currentLoopAnimation[1]);
+    db.clearBloc(db.currentLoopAnimation[0])
+    db.currentLoopAnimation = []
+  }
+  let i = setInterval(function() {
     db.writeInBloc(_bloc, resultTxt)
     if (counter === nbloop * txt.length) {
       clearInterval(i);
@@ -239,6 +245,8 @@ Dashboard.prototype.writeInBlocLooper = function(_bloc, txt, db, nbloop = 10, in
         callBack()
       }
     }
+    db.currentLoopAnimation.push(_bloc)
+    db.currentLoopAnimation.push(i)
     resultTxt = resultTxt.slice(1, resultTxt.length) + resultTxt.slice(0, 1)
     counter++;
   }, interval);
@@ -399,6 +407,26 @@ Dashboard.prototype.initKeyboardEvents = function() {
   });
 }
 
+/**
+* unRegistrerEvent
+* @method  to remove a registered Event
+* @param {String} keyName the event key name
+* @return {Dashboard} - the dashboard object
+*/
+Dashboard.prototype.unRegistrerEvent = function(keyName) {
+  // console.log(this.eventRegistered)
+  let id = null
+  for (var i = 0; i < this.eventRegistered.length; i++) {
+    if (this.eventRegistered[i][0] == keyName) {
+      id = i;
+    }
+  }
+  if(id!== null){
+    this.eventRegistered.splice(id, 1,)
+  }
+  // console.log(this.eventRegistered)
+  return this;
+}
 
 
 // exportation
